@@ -148,10 +148,10 @@ hacs.json, README.md, LICENSE (MIT)
   stesso, hassfest la rifiuta; l'import in `api.py` funziona comunque). Le
   chiavi del manifest devono essere ordinate: `domain`, `name`, poi
   alfabetico (altrimenti hassfest fallisce).
-- `hacs.json` richiede HA >= 2026.10.3, l'unica versione su cui e' stato
-  provato (`alarm_control_panel.py` importa `AlarmControlPanelState`, che
-  non esiste nelle versioni vecchie). Si puo' abbassare se qualcuno
-  conferma una versione precedente.
+- `hacs.json` richiede HA >= 2026.10.3, la versione piu' vecchia su cui e'
+  stato provato (poi anche la 2026.11.0); `alarm_control_panel.py`
+  importa `AlarmControlPanelState`, che non esiste nelle versioni vecchie.
+  Si puo' abbassare se qualcuno conferma una versione precedente.
 
 ## Come testare senza Home Assistant
 
@@ -233,13 +233,21 @@ python tools/byalarm_sai_client.py --host <IP> --username <email> \
     processo: le run di un fork richiedono "Approve workflows to run" ad
     ogni push; controllare prima che non tocchi `.github/`. L'issue #2 e'
     ancora aperta (da chiudere/ringraziare).
-13. Da fare appena il login del browser su Home Assistant e' disponibile
-    (la sessione e' scaduta; il login OIDC (SSO) dava "redirect_uri
-    non valido", funziona "Default login"): installare su HA le release
-    dalla v0.9.3 alla v0.9.7 (`[UPLOAD]` + riavvio), verificare che la
-    SAIG si comporti come prima con il codice multi-area, e provare dal
-    vivo il reauth (`async_update_reload_and_abort`), mai verificato
-    dentro HA.
+13. [FATTO in parte] v0.9.7 installata su HA (2026.11.0) e verificata
+    il 2026-11-04 sulla SAIG: un solo pannello, stesso entity_id e
+    unique_id (`A32250FBB01025_area_21001`), 27 binary_sensor come prima,
+    nuovi attributi `id_area`/`zone_ultimo_allarme`, card registrata senza
+    errori, tooltip corretti e risorsa Lovelace aggiornata da sola a
+    `?v=0.9.7`. NON verificato dentro HA: il reauth
+    (`async_update_reload_and_abort`) e il passaggio a runtime
+    `ByAlarmAuthError` -> `ConfigEntryAuthFailed`; provarli richiede di
+    rendere invalide le credenziali salvate e reinserirle nel form (cosa
+    che Claude non puo' fare: niente password nei campi), quindi vanno
+    provati dall'utente. Accesso a HA: l'SSO (OIDC) funziona solo da
+    `https://ha.dan-pir.net` (redirect URI registrato li'), non da
+    `http://192.168.178.120:8123`; li' serve il "Default login". Dopo il
+    login l'utente della scheda `seed` del browser integrato (origin
+    `ha.dan-pir.net`) non e' admin (`system_log/list` -> Unauthorized).
 
 ## Sicurezza / cose a cui fare attenzione
 
